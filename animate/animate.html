@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Animate!</title>
+		<script language="javascript" src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
+		<script>
+			var stage;
+			var context;
+			var enemyXPos=100;
+			var enemyYPos=100;
+			var stage;
+			var animation;
+			var spritesheet;
+			var queue;
+			var WIDTH= 1024;
+			var HEIGHT= 768;
+			var xSpeed = 6;
+			var ySpeed = 4.5;
+
+			window.onload= function()
+			{
+				var canvas = document.getElementById('myCanvas');
+    			context = canvas.getContext('2d');
+				stage = new createjs.Stage("myCanvas");
+				
+				/*
+			     *      Set up the Asset Queue
+			     *
+			     */
+			    queue = new createjs.LoadQueue(false);
+			    queue.on("complete", queueLoaded, this);
+			    
+				/*
+			    *      Create a load manifest for all assets
+			    *
+			    */
+			    queue.loadManifest([
+			        {id: 'backgroundImage', src: 'assets/background.png'},
+			        {id: 'batSpritesheet', src: 'assets/batSpritesheet.png'},
+			    ]);
+			    queue.load();
+
+			}
+
+			function queueLoaded()
+			{
+				// Add background image
+			    var backgroundImage = new createjs.Bitmap(queue.getResult("backgroundImage"))
+			    stage.addChild(backgroundImage);
+			
+			     //Create bat spritesheet
+				 spriteSheet = new createjs.SpriteSheet({
+				  		    "images": [queue.getResult('batSpritesheet')],
+				        	"frames": {"width": 198, "height": 117},
+				        	"animations": { "flap": [0,4] }
+				    	});
+			
+				// Create bat sprite
+    			createEnemy();
+			
+    			createjs.Ticker.setFPS(15);
+    			createjs.Ticker.addEventListener('tick', stage);
+    			createjs.Ticker.addEventListener('tick', tickEvent);
+			}
+
+			function createEnemy()
+			{
+				animation = new createjs.Sprite(spriteSheet, "flap");
+			    animation.regX = 99;
+			    animation.regY = 58;
+			    animation.x = enemyXPos;
+			    animation.y = enemyYPos;
+			    animation.gotoAndPlay("flap");
+			    stage.addChildAt(animation,1);
+			}
+
+			function tickEvent()
+			{
+				if(enemyXPos < WIDTH  && enemyXPos > 0){
+					enemyXPos += xSpeed;
+				} else
+				{
+					xSpeed *= -1;
+					enemyXPos += xSpeed;
+				}
+
+				if(enemyYPos < HEIGHT && enemyYPos > 0){
+					enemyYPos += ySpeed;
+				} else
+				{
+					ySpeed *= -1;
+					enemyYPos += ySpeed;
+				}
+
+				animation.x = enemyXPos;
+				animation.y = enemyYPos;
+				
+			}
+
+
+		</script>
+	</head>
+	<body>
+		<canvas id="myCanvas" width="1024" height="768"></canvas>
+	</body>
+</html>
